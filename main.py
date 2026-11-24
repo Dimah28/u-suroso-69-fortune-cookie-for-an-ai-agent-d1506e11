@@ -19,10 +19,26 @@ FORTUNE = (
 MAX_CHARS = 140
 
 
+def validate_fortune(text: str) -> str:
+    """Return ``text`` unchanged if it passes the 1-140 character gate.
+
+    Raises ``ValueError`` with the gate failure reason otherwise, so the
+    caller can report it without mixing validation into ``main``.
+    """
+    if not text.strip():
+        raise ValueError("fortune is empty")
+    if len(text) > MAX_CHARS:
+        raise ValueError(
+            f"fortune is {len(text)} characters, over the {MAX_CHARS} limit"
+        )
+    return text
+
+
 def main() -> int:
-    text = FORTUNE
-    if not text.strip() or len(text) > MAX_CHARS:
-        print("fortune fails the 1-140 character gate", file=sys.stderr)
+    try:
+        text = validate_fortune(FORTUNE)
+    except ValueError as exc:
+        print(f"fortune fails the 1-140 character gate: {exc}", file=sys.stderr)
         return 1
     out_dir = os.environ.get("MAKEFUN_OUTPUT_DIR", "/output")
     os.makedirs(out_dir, exist_ok=True)
